@@ -3,7 +3,7 @@ from post import views
 
 urlpatterns = [
 
-    url(r'pub/', views.pub),
+    url(r'^pub', views.pub),
     url(r'^(\d+)$', views.get),
     url(r'^$', views.getall),
 ]
