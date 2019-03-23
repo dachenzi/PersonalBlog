@@ -1,0 +1,53 @@
+{% load extra_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .red {
+            color:red;
+        }
+        .blue {
+            color:blue;
+        }
+    </style>
+</head>
+<body>
+<form action="">
+  {% csrf_token %}
+</form>
+
+    <h1>Test 1</h1>
+    <ul>
+        {% for key in c %}
+        <li class={{ forloop.counter|divisibleby:2|yesno:'red,blue' }}>{{ forloop.counter}} {{ key }}</li>
+        {% endfor %}
+    </ul>
+    <hr />
+    <h1>Test 2</h1>
+    <table border="1px" style="margin: 10px;border-collapse: collapse">
+        <tbody>
+        {% for i in e %}
+                <tr class={{ i|divisibleby:2|yesno:'red,blue'  }}>
+                    {% for j in e %}
+                        {% if j <= i %}
+                            <!--<td>{{ j }}x{{ i }}={% widthratio i 1 j%}</td>-->
+                            <td>{{ j }}x{{ i }}={% times i j %}</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <hr />
+    <table border="1px" style="margin: 10px;padding:10px;border-collapse: collapse">
+
+
+
+    </table>
+
+
+
+</body>
+</html>
