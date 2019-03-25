@@ -49,7 +49,7 @@ def login(request):
 
 def register(request: HttpRequest):
     if request.method == 'POST':
-        content_type = request.META.get('CONTENT_TYPE') # CONTENT_TYPE:application/json
+        content_type = request.META.get('CONTENT_TYPE')  # CONTENT_TYPE:application/json
         try:
             if 'json' in content_type:
                 payload = simplejson.loads(request.body)
@@ -72,6 +72,11 @@ def register(request: HttpRequest):
         try:
             user.save()
             token = tools.get_token(user.id)
-            return JsonResponse({'token': token})
+            return JsonResponse({
+                'user': user.id,
+                'name': user.name,
+                'email': user.email,
+                'token': token
+            })
         except:
             raise

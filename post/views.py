@@ -1,9 +1,10 @@
 import datetime
 
+import math
 import simplejson
 from django.shortcuts import render
 from post import models
-from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest, JsonResponse, HttpResponseNotFound
 from common import tools
 from django.db import transaction
 
@@ -53,9 +54,54 @@ def pub(request: HttpRequest):
         )
 
 
-def get(request):
-    pass
+def get(request, post_id):
+    if request.method == 'GET':
+        post = models.Post.objects.filter(pk=post_id).first()
+
+        if post:
+            return JsonResponse(
+                {
+                    "id": post.id,
+                    "title": post.title,
+                    "author": post.author.name,
+                    'content': post.content.content
+                }
+            )
+        return HttpResponseNotFound('post is not exists')
 
 
 def getall(request):
-    pass
+    if request.method == 'GET':
+        # try:
+        #     page = int(request.GET.get('page', 1))
+        #     page = page if page > 0 else 1
+        # except Exception:
+        #     page = 1
+        #
+        # try:
+        #     size = int(request.GET.get('size', 20))
+        #     size = size if size > 0 and size < 100 else 20
+        # except Exception:
+        #     size = 20
+
+        page = tools.validate(request.GET, 'page', 1, int, lambda result, default: result if result > 0 else default)
+        size = tools.validate(request.GET, 'size', 3, int,
+                              lambda result, default: result if result > 0 and size < 100 else default)
+        start = (page - 1) * size
+        all_posts = models.Post.objects.order_by('id')
+        count = all_posts.count()
+        posts = all_posts[start:start + size]
+        return JsonResponse(
+            {'posts': [
+                {"id": post.id,
+                 "title": post.title,
+                 "author": post.author.name,
+                 'content': post.content.content
+                 } for post in posts
+            ],
+                'page': page,
+                'total': math.ceil(count / size)
+            }
+        )
+
+    return HttpResponse('OK')
